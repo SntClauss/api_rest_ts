@@ -1,3 +1,4 @@
+/// <reference path="promise-bluebird.d.ts" />
 'use strict';
 
 // Configurando variables, "mongoose" para la base de datos, "app" para asignar el archivo de rutas en la web
@@ -7,10 +8,12 @@ import { app } from './app';
 
 const port = process.env.port || 3977
 
-const options = {};
+const options = {useMongoClient:true};
 const host = process.env.mongohost || 'locahost';
 const dbPort: any = process.env.mongoport ||27017;
 const db = process.env.dbname || 'default';
+
+
 
 // conectando a base de datos, donde si no conecta expulsa el mensaje de error en consola.
 connect(`mongodb://${host}:${dbPort}/${db}`, options, (err) => {
