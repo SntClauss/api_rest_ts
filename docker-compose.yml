@@ -1,0 +1,36 @@
+version: '3'
+services:
+    reverse:
+        container_name: reverse
+        hostname: reverse
+        image: nginx
+        ports:
+        - 80:80
+        volumes:
+        - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    mongodb:    
+        image: mongo   
+        container_name: mongodb
+        expose: 
+            - "27017"
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongodata:/data/db
+    node:
+        container_name: node
+        build: .
+        depends_on: 
+            - "mongodb"
+        ports:
+            - "3977:3977"
+        volumes:
+            - ./build
+        environment: 
+            - mongohost=mongodb
+            - mongoport=27017
+            - dbname=api_rest
+            - port=3977 
+volumes:
+    mongodata:
+        
