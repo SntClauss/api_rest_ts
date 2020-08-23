@@ -1,7 +1,7 @@
 'use strict';
 
 import { Request, Response } from "express";
-import bcrypt from 'bcrypt-nodejs'; // encryptador para passwords.
+import bcrypt from 'bcryptjs'; // encryptador para passwords.
 
 import User, { IUser } from '../models/user';
 import { createToken } from '../services/jwt';
@@ -13,7 +13,7 @@ function register(req: Request, res: Response) {
   user.set(req.body)
   if (user.password) {
     // Encriptar y guardar password
-    bcrypt.hash(user.password,'',()=>{}, (err: any, hash: string) => {
+    bcrypt.hash(user.password,'', (err: any, hash: string) => {
       user.password = hash;
       if (user.name != null || user.status != null ) {
         // Guardar el usuario        
