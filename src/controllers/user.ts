@@ -15,7 +15,11 @@ async function register(req: Request, res: Response): Promise<void> {
       res.status(200).send({ user: userSaved });
     })
     .catch((err: any) => {
-      res.status(500).send({ error: err.message || 'Internal Error' });
+      if (err.name === 'ValidationError') res.status(422).send({ error: err.message });
+      else if (err.name === 'MongoError' && err.code === 11000)
+        res.status(422)
+          .send({ error: 'Duplicate key value (eg: email already exists)' });
+      else res.status(500).send({ 'Internal Error' });
       console.error(err);
     });
 }
