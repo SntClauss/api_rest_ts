@@ -13,21 +13,24 @@ function register(req: Request, res: Response) {
   user.set(req.body)
   if (user.password) {
     // Encriptar y guardar password
-    bcrypt.hash(user.password,'', (err: any, hash: string) => {
-      user.password = hash;
-      if (user.name != null || user.status != null ) {
-        // Guardar el usuario        
-        user.save((err_: any, userStored: IUser) => {
-          if (err_) {
-            res.status(500).send({ message: 'Error al guardar el usuario' });
-          } else if (!userStored) {
-            res.status(404).send({ message: 'No se ha registrado el usuario' });
-          } else {
-            res.status(200).send(JSON.stringify(userStored));
-          }
-        });
-      } else {
-        res.status(200).send({ message: 'Rellena todos los campos' });
+    bcrypt.hash(user.password, 8, (err: any, hash: string) => {
+      if (err) res.status(500).send({ message: 'Error de encriptación' });
+      else {
+        user.password = hash;
+        if (user.name != null || user.status != null) {
+          // Guardar el usuario        
+          user.save((err_: any, userStored: IUser) => {
+            if (err_) {
+              res.status(500).send({ message: err_ });
+            } else if (!userStored) {
+              res.status(404).send({ message: 'No se ha registrado el usuario' });
+            } else {
+              res.status(200).send(JSON.stringify(userStored));
+            }
+          });
+        } else {
+          res.status(200).send({ message: 'Rellena todos los campos' });
+        }
       }
     });
   } else {
@@ -63,22 +66,22 @@ function loginUser(req: Request, res: Response) {
 
 function selectQuery(req: Request, res: Response) {
   User.find({ _id: req.body._id }, (err: any, finded: any) => {
-      if (err) res.status(404).send({
-          message: 'Error en encontrar el objeto',
-          error: err,
-      });
-      else res.status(200).send({ msg: 'OK!' });
+    if (err) res.status(404).send({
+      message: 'Error en encontrar el objeto',
+      error: err,
+    });
+    else res.status(200).send({ msg: 'OK!' });
   });
 }
 
 function deleteQuery(req: Request, res: Response) {
   const objectId = req.params.id;
   User.findByIdAndRemove(objectId, (err: any, removed: any) => {
-      if (err) res.status(404).send({
-          message: 'El objeto no a sido eliminado o no existe',
-          error: err,
-      });
-      else res.status(200).send({ msg: 'OK!' });
+    if (err) res.status(404).send({
+      message: 'El objeto no a sido eliminado o no existe',
+      error: err,
+    });
+    else res.status(200).send({ msg: 'OK!' });
   });
 }
 
