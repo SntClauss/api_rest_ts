@@ -1,10 +1,12 @@
-/// <reference path="promise-bluebird.d.ts" />
 'use strict';
 
 // Configurando variables, "mongoose" para la base de datos, "app" para asignar el archivo de rutas en la web
 // y "port" para el puerto. En este caso, por ser visual studio, asignara el puerto automatico, sino lo asignase usaria el puerto 3977.
-import { connect } from "mongoose";
+import { Mongoose, connect } from "mongoose";
+
 import { app } from './app';
+
+var Promise = require("bluebird");
 
 const port = process.env.port || 3977
 
@@ -12,7 +14,6 @@ const options = {useMongoClient:true};
 const host = process.env.mongohost || 'locahost';
 const dbPort: any = process.env.mongoport ||27017;
 const db = process.env.dbname || 'default';
-
 
 
 // conectando a base de datos, donde si no conecta expulsa el mensaje de error en consola.
