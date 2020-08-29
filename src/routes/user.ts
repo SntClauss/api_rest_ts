@@ -3,7 +3,7 @@ import express from 'express'
 import { UserController } from '../controllers/user';
 import { mdAuth } from '../middlewares/authenticated';
 
-export const api = express.Router();
+export const api = require("express-promise-router")();
 
 api.post('/register', UserController.register);
 api.post('/login', UserController.loginUser);
