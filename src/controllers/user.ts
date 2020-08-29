@@ -7,7 +7,7 @@ import { createToken } from '../services/jwt';
 import bcrypt from 'bcryptjs'; // encryptador para passwords.
 
 
-async function register(req: Request, res: Response): Promise<void> {
+const register = async (req: Request, res: Response): Promise<void> => {
   const user: IUser = new User();
   user.set(req.body)
   user.save()
@@ -18,13 +18,13 @@ async function register(req: Request, res: Response): Promise<void> {
       if (err.name === 'ValidationError') res.status(422).send({ error: err.message });
       else if (err.name === 'MongoError' && err.code === 11000)
         res.status(422)
-          .send({ error: 'Duplicate key value (eg: email already exists)' });
+          .send({ error: 'Duplicated key value (eg: email already exists)' });
       else res.status(500).send({ error: 'Internal Error' });
       console.error(err);
     });
 }
 
-async function loginUser(req: Request, res: Response): Promise<void> {
+const loginUser = async (req: Request, res: Response): Promise<void> =>
   User.findOne({ name: req.body.email || req.body.name || '' })
     .exec()
     .then(async (user) => {
@@ -38,9 +38,9 @@ async function loginUser(req: Request, res: Response): Promise<void> {
       console.error(err.message || err);
       if (err.stack) console.error(err.stack);
     });
-}
 
-async function selectQuery(req: Request, res: Response): Promise<void> {
+
+const selectQuery = async (req: Request, res: Response): Promise<void> => 
   User.findOne({ _id: req.body._id })
     .exec()
     .then((user) => {
@@ -50,9 +50,9 @@ async function selectQuery(req: Request, res: Response): Promise<void> {
       res.status(500).send({ message: 'Internal Error' });
       console.error(err);
     });
-}
 
-async function deleteQuery(req: Request, res: Response): Promise<void> {
+
+const deleteQuery = async (req: Request, res: Response): Promise<void> => 
   User.remove({ _id: req.params.id })
     .exec()
     .then((remove) => {
@@ -61,7 +61,7 @@ async function deleteQuery(req: Request, res: Response): Promise<void> {
       res.status(500).send({ message: 'Internal Error' });
       console.error(err);
     });
-}
+
 
 
 export const UserController = {
