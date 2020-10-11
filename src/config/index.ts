@@ -6,7 +6,7 @@ import { Mongoose, connect } from "mongoose";
 
 import { app } from './app';
 
-var Promise = require("bluebird");
+//var Promise = require("bluebird");
 
 const port = process.env.port || 3977
 

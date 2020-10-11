@@ -25,7 +25,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
 }
 
 const loginUser = async (req: Request, res: Response): Promise<void> =>
-  User.findOne({ name: req.body.email || req.body.name || '' })
+  User.findOne({ email: req.body.email || '' })
     .exec()
     .then(async (user) => {
       if (!user) throw Error();
