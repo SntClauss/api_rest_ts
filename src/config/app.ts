@@ -10,8 +10,6 @@ import * as roleRoutes from '../routes/role';
 import * as statusRoutes from '../routes/status';
 
 
-
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 

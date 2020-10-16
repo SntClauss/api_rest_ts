@@ -8,20 +8,17 @@ import bcrypt from 'bcryptjs'; // encryptador para passwords.
 
 
 const register = async (req: Request, res: Response): Promise<void> => {
-  const user: IUser = new User();
-  user.set(req.body)
-  user.save()
-    .then((userSaved) => {
-      res.status(200).send({ user: userSaved });
-    })
-    .catch((err: any) => {
-      if (err.name === 'ValidationError') res.status(422).send({ error: err.message });
-      else if (err.name === 'MongoError' && err.code === 11000)
-        res.status(422)
-          .send({ error: 'Duplicated key value (eg: email already exists)' });
-      else res.status(500).send({ error: 'Internal Error' });
-      console.error(err);
-    });
+  const status: IUser = new User();
+  status.set(req.body)
+  try {
+    const saved = await status.save()
+    const statusCode: number = saved ? 201 : 404;
+    res.sendStatus(statusCode);
+  } catch (err) {
+    res.sendStatus(500);
+    console.error(err);
+  }
+
 }
 
 const loginUser = async (req: Request, res: Response): Promise<void> =>
@@ -40,33 +37,46 @@ const loginUser = async (req: Request, res: Response): Promise<void> =>
     });
 
 
-const selectQuery = async (req: Request, res: Response): Promise<void> => 
-  User.findOne({ _id: req.body._id })
-    .exec()
-    .then((user) => {
-      res.status(200).send({ user });
-    })
-    .catch((err: any) => {
-      res.status(500).send({ message: 'Internal Error' });
-      console.error(err);
-    });
+const updateQuery = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const updated = await User.findByIdAndUpdate(req.params.id, req.body);
+    const statusCode: number = updated ? 201 : 404;
+    res.sendStatus(statusCode);
+  } catch (err) {
+    res.sendStatus(500);
+    console.error(err);
+  }
+}
+
+const selectQuery = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const selected = await User.findOne({ _id: req.params.id })
+    const statusCode: number = selected ? 201 : 404;
+    res.status(statusCode).send({ selected });
+  } catch (err) {
+    res.sendStatus(500);
+    console.error(err);
+  }
+}
 
 
-const deleteQuery = async (req: Request, res: Response): Promise<void> => 
-  User.remove({ _id: req.params.id })
-    .exec()
-    .then((remove) => {
-      res.status(200).send({ msg: remove });
-    }).catch((err: any) => {
-      res.status(500).send({ message: 'Internal Error' });
-      console.error(err);
-    });
 
+const deleteQuery = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const selected = await User.remove({ _id: req.params.id })
+    const statusCode: number = selected ? 201 : 404;
+    res.status(statusCode).send({ selected });
+  } catch (err) {
+    res.sendStatus(500);
+    console.error(err);
+  }
+}
 
 
 export const UserController = {
   register,
   loginUser,
   selectQuery,
-  deleteQuery
+  deleteQuery,
+  updateQuery,
 };

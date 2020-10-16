@@ -3,59 +3,58 @@
 import { Request, Response } from "express";
 import Role, { IRole } from '../models/role';
 
-const saveQuery = async (req: Request, res: Response) => {
-    const role: IRole = new Role();
-    role.set(req.body)
-    role.save()
-    .then(saved => res.status(200).send({ saved }))
-    .catch((err: any) => {
-        if (err.name === 'ValidationError') res.status(422).send({ error: err.message });
-        else if (err.name === 'MongoError' && err.code === 11000)
-          res.status(422)
-            .send({ error: 'Duplicated key value' });
-        else res.status(500).send({ error: 'Internal Error' });
-        console.error(err);
-      });
+const saveQuery = async (req: Request, res: Response): Promise<void> => {
+  const status: IRole = new Role();
+  status.set(req.body)
+  try {
+    const saved = await status.save()
+    const statusCode: number = saved ? 201 : 404;
+    res.sendStatus(statusCode);
+  } catch (err) {
+    res.sendStatus(500);
+    console.error(err);
+  }
+
 }
 
-const updateQuery = async (req: Request, res: Response) => {
-    const id = req.params.id;
-    const update = req.body;
-    Role.findByIdAndUpdate(id, update)
-    .exec()
-    .then((updated) => res.status(200).send({ updated }))
-    .catch((err: any) => {
-        res.status(500).send({ message: 'Internal Error' });
-        console.error(err);
-      })    
+const updateQuery = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const updated = await Role.findByIdAndUpdate(req.params.id, req.body);
+    const statusCode: number = updated ? 201 : 404;
+    res.sendStatus(statusCode);
+  } catch (err) {
+    res.sendStatus(500);
+    console.error(err);
+  }
 }
 
-const selectQuery = async (req: Request, res: Response) => 
-    Role.findOne({ _id: req.body._id })
-      .exec()
-      .then((selected) => {
-        res.status(200).send({ selected });
-      })
-      .catch((err: any) => {
-        res.status(500).send({ message: 'Internal Error' });
-        console.error(err);
-      });
-  
-  
-  const deleteQuery = async (req: Request, res: Response) => 
-    Role.remove({ _id: req.params.id })
-      .exec()
-      .then((removed) => {
-        res.status(200).send({ msg: removed });
-      }).catch((err: any) => {
-        res.status(500).send({ message: 'Internal Error' });
-        console.error(err);
-      });
-  
+const selectQuery = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const selected = await Role.findOne({ _id: req.params.id })
+    const statusCode: number = selected ? 201 : 404;
+    res.status(statusCode).send({ selected });
+  } catch (err) {
+    res.sendStatus(500);
+    console.error(err);
+  }
+}
+
+
+
+const deleteQuery = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const selected = await Role.remove({ _id: req.params.id })
+    const statusCode: number = selected ? 201 : 404;
+    res.status(statusCode).send({ selected });
+  } catch (err) {
+    res.sendStatus(500);
+    console.error(err);
+  }
+}
 
 export const RoleController = {
-    saveQuery,
-    selectQuery,
-    updateQuery,
-    deleteQuery,
+  saveQuery,
+  selectQuery,
+  updateQuery,
+  deleteQuery,
 };
