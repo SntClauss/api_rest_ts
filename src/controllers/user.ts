@@ -13,7 +13,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const saved = await status.save()
     const statusCode: number = saved ? 201 : 404;
-    res.sendStatus(statusCode);
+    res.status(statusCode).send({saved});
   } catch (err) {
     res.sendStatus(500);
     console.error(err);
@@ -65,7 +65,7 @@ const deleteQuery = async (req: Request, res: Response): Promise<void> => {
   try {
     const selected = await User.remove({ _id: req.params.id })
     const statusCode: number = selected ? 201 : 404;
-    res.status(statusCode).send({ selected });
+    res.status(statusCode);
   } catch (err) {
     res.sendStatus(500);
     console.error(err);
